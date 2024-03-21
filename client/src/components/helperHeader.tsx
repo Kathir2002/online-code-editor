@@ -8,23 +8,41 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import {
   compilerSliceStateType,
   updateCurrentLanguage,
 } from "@/redux/slices/compilerSlice";
 import { RootState } from "@/redux/store";
+import { useState } from "react";
 
 const HelperHeader = () => {
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState<boolean>(false);
   const currentLanguage = useSelector(
     (state: RootState) => state.compilerSlice.currentLanguage
   );
+  const fullCode = useSelector(
+    (state: RootState) => state.compilerSlice.fullCode
+  );
+
+  const handleSaveCode = async () => {
+    await axios
+      .post("http://localhost:5000/api/compiler/save", { fullCode })
+      .then((res) => {
+        console.log(res?.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   return (
     <div className="__helper_header h-[50px] bg-black text-white p-2 flex justify-between items-center gap-1">
       <div className="__btn_container flex gap-1">
         <Button
+          onClick={() => handleSaveCode()}
           className="flex justify-center items-center gap-1"
           variant={"success"}
         >
