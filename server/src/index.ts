@@ -1,18 +1,38 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
+import { config } from "dotenv";
+config();
 import { connectMongoDB } from "./lib/dbConnect";
+import cookieParser from "cookie-parser";
 import { compilerRouter } from "./routes/compilerRouter";
-dotenv.config();
+import { authRouter } from "./routes/authRoutes";
+import session from "express-session";
+import passport from "passport";
+import "./passport/googlePassport";
 
 const app = express();
-
 app.use(express.json());
-app.use(cors());
+app.use(cookieParser());
+
+app.use(
+  cors({
+    credentials: true,
+    origin: "http://localhost:3000",
+  })
+);
+
+app.use(
+  session({ secret: "keyboard cat", resave: false, saveUninitialized: false })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use("/api/compiler", compilerRouter);
+app.use("/api/auth", authRouter);
 
 connectMongoDB();
+
 app.listen(5000, () => {
   console.log("server connected to Port : 5000");
 });

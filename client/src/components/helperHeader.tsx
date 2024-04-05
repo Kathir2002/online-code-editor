@@ -1,4 +1,4 @@
-import { Code, Copy, LoaderCircle, Save, Share2 } from "lucide-react";
+import { Code, Copy, Download, LoaderCircle, Save, Share2 } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   Select,
@@ -27,6 +27,7 @@ import { RootState } from "@/redux/store";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import { Input } from "./ui/input";
 
 const HelperHeader = () => {
   const dispatch = useDispatch();
@@ -34,6 +35,7 @@ const HelperHeader = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
   const [saveBtn, setSaveBtn] = useState<boolean>(false);
+  const [title, setTitle] = useState<string>("My Code");
   const currentLanguage = useSelector(
     (state: RootState) => state.compilerSlice.currentLanguage
   );
@@ -52,7 +54,11 @@ const HelperHeader = () => {
   const handleSaveCode = async () => {
     setLoading(true);
     await axios
-      .post("http://localhost:5000/api/compiler/save", { fullCode })
+      .post(
+        "http://localhost:5000/api/compiler/save",
+        { fullCode, title },
+        { withCredentials: true }
+      )
       .then((res) => {
         navigate(`/compiler/${res?.data?.url}`, { replace: true });
       })
@@ -64,30 +70,107 @@ const HelperHeader = () => {
       });
   };
 
+  const handleDownloadCode = async () => {
+    if (
+      fullCode.html === "" ||
+      fullCode.css === "" ||
+      fullCode.javascript === ""
+    ) {
+      toast("Error: Code is empty!");
+    } else {
+      const htmlCode = new Blob([fullCode.html], { type: "text/html" });
+      const cssCode = new Blob([fullCode.css], { type: "text/css" });
+      const javascriptCode = new Blob([fullCode.javascript], {
+        type: "text/javascript",
+      });
+      const htmlLink = document.createElement("a");
+      const cssLink = document.createElement("a");
+      const javascriptLink = document.createElement("a");
+
+      htmlLink.href = URL.createObjectURL(htmlCode);
+      htmlLink.download = `index.html`;
+      document.body.appendChild(htmlLink);
+
+      cssLink.href = URL.createObjectURL(cssCode);
+      cssLink.download = `style.css`;
+      document.body.appendChild(cssLink);
+
+      javascriptLink.href = URL.createObjectURL(javascriptCode);
+      javascriptLink.download = `script.js`;
+      document.body.appendChild(javascriptLink);
+
+      if (fullCode.html !== "") {
+        htmlLink.click();
+      }
+      if (fullCode.css !== "") {
+        cssLink.click();
+      }
+      if (fullCode.javascript !== "") {
+        javascriptLink.click();
+      }
+
+      document.body.removeChild(htmlLink);
+      document.body.removeChild(cssLink);
+      document.body.removeChild(javascriptLink);
+      toast("Code downloaded successfully!");
+    }
+  };
+
   return (
     <div className="__helper_header h-[50px] bg-black text-white p-2 flex justify-between items-center gap-1">
       <div className="__btn_container flex gap-1">
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant={"success"} disabled={loading} size={"icon"}>
+              {loading ? (
+                <>
+                  <LoaderCircle size={16} className="animate-spin" /> Saving...
+                </>
+              ) : (
+                <>
+                  <Save size={16} />
+                </>
+              )}
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="flex gap-1 justify-center items-center">
+                <Code /> Save your Code!
+              </DialogTitle>
+              <DialogDescription className=" flex flex-col gap-2">
+                <div className="__url flex gap-1">
+                  <Input
+                    value={title}
+                    required
+                    onChange={(e) => setTitle(e.target.value)}
+                    className=" bg-slate-700 focus:ring-0"
+                    placeholder="Type a title for the code..."
+                  />
+                  <Button variant={"success"} onClick={() => handleSaveCode()}>
+                    Save
+                  </Button>
+                </div>
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+
         <Button
-          onClick={() => handleSaveCode()}
-          className="flex justify-center items-center gap-1"
-          variant={"success"}
-          disabled={loading}
+          onClick={() => {
+            handleDownloadCode();
+          }}
+          variant={"blue"}
+          size={"icon"}
         >
-          {loading ? (
-            <>
-              <LoaderCircle size={16} className="animate-spin" /> Saving...
-            </>
-          ) : (
-            <>
-              <Save size={16} />
-              Save{" "}
-            </>
-          )}
+          <Download size={16} />
         </Button>
         {saveBtn && (
           <Dialog>
-            <DialogTrigger className="whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 h-9 px-4 py-2 flex justify-center items-center gap-1">
-              <Share2 size={16} /> Share
+            <DialogTrigger asChild>
+              <Button size={"icon"} variant={"secondary"}>
+                <Share2 size={16} />
+              </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>

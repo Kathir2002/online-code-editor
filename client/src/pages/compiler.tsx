@@ -7,6 +7,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import { apiUrlDB } from "@/lib/utils";
 import { updateFullCode } from "@/redux/slices/compilerSlice";
 import { handleError } from "@/utils/handleError";
 import axios from "axios";
@@ -24,7 +25,11 @@ const Compiler = () => {
       const getCode = async () => {
         setLoading(true);
         await axios
-          .post("http://localhost:5000/api/compiler/getCode", { urlId })
+          .post(
+            `${apiUrlDB}/api/compiler/getCode`,
+            { urlId },
+            { withCredentials: true }
+          )
           .then((res) => {
             console.log(res?.data);
             dispatch(updateFullCode(res?.data?.fullCode));
@@ -45,6 +50,14 @@ const Compiler = () => {
     }
   }, [urlId]);
 
+  if (loading) {
+    return (
+      <div className="w-screen h-[calc(100dvh-60px)] flex justify-center items-center">
+        <Loader />
+      </div>
+    );
+  }
+
   return (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel
@@ -52,7 +65,7 @@ const Compiler = () => {
         defaultSize={50}
       >
         <HelperHeader />
-        {loading ? <Loader /> : <CodeEditior />}
+        <CodeEditior />
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel
