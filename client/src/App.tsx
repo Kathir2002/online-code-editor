@@ -1,6 +1,6 @@
 import Header from "./components/header";
 import { ThemeProvider } from "./components/theme-provider";
-import { Toaster, toast } from "sonner";
+import { Toaster } from "sonner";
 import { useEffect } from "react";
 import axios from "axios";
 import { apiUrlDB } from "./lib/utils";
@@ -24,7 +24,7 @@ export default function App() {
         }
       })
       .catch((err) => {
-        toast(err?.response?.data?.message);
+        console.log(err);
       });
   };
   return (
