@@ -16,7 +16,8 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_SECRET as string,
-      callbackURL: "http://localhost:5000/api/auth/google/callback",
+      callbackURL:
+        "https://online-code-editor-l5r7.onrender.com/api/auth/google/callback",
       passReqToCallback: true,
     },
     async function (
