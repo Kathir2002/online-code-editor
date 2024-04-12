@@ -5,6 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// export const apiUrlDB = "http://localhost:5000";
 export const apiUrlDB = "https://online-code-editor-l5r7.onrender.com";
 
 export const handleLoginWithGoogle = () => {
