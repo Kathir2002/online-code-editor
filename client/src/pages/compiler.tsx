@@ -8,8 +8,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { apiUrlDB } from "@/lib/utils";
-import { updateFullCode } from "@/redux/slices/compilerSlice";
-import { handleError } from "@/utils/handleError";
+import { updateFullCode, updateIsOwner } from "@/redux/slices/compilerSlice";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -31,8 +30,8 @@ const Compiler = () => {
             { withCredentials: true }
           )
           .then((res) => {
-            console.log(res?.data);
             dispatch(updateFullCode(res?.data?.fullCode));
+            dispatch(updateIsOwner(res.data.isOwner));
           })
           .catch((err) => {
             if (axios.isAxiosError(err)) {
@@ -40,7 +39,6 @@ const Compiler = () => {
                 toast("Invaild URL, Default code loaded!");
               }
             }
-            handleError(err);
           })
           .finally(() => {
             setLoading(false);

@@ -1,4 +1,12 @@
-import { Code, Copy, Download, LoaderCircle, Save, Share2 } from "lucide-react";
+import {
+  Code,
+  Copy,
+  Download,
+  LoaderCircle,
+  PencilLine,
+  Save,
+  Share2,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import {
   Select,
@@ -28,6 +36,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Input } from "./ui/input";
+import { apiUrlDB } from "@/lib/utils";
 
 const HelperHeader = () => {
   const dispatch = useDispatch();
@@ -35,9 +44,13 @@ const HelperHeader = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
   const [saveBtn, setSaveBtn] = useState<boolean>(false);
+  const [editBtn, setEditBtn] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("My Code");
   const currentLanguage = useSelector(
     (state: RootState) => state.compilerSlice.currentLanguage
+  );
+  const isOwner = useSelector(
+    (state: RootState) => state.compilerSlice.isOwner
   );
   const fullCode = useSelector(
     (state: RootState) => state.compilerSlice.fullCode
@@ -63,7 +76,7 @@ const HelperHeader = () => {
         navigate(`/compiler/${res?.data?.url}`, { replace: true });
       })
       .catch((err) => {
-        console.log(err);
+        toast(err?.response?.data?.message);
       })
       .finally(() => {
         setLoading(false);
@@ -116,6 +129,27 @@ const HelperHeader = () => {
     }
   };
 
+  const handleEditIcon = async () => {
+    setEditBtn(true);
+    await axios
+      .put(
+        `${apiUrlDB}/api/compiler/edit/${urlId}`,
+        { fullCode },
+        { withCredentials: true }
+      )
+      .then((res) => {
+        if (res?.data?.status) {
+          toast(res?.data?.message);
+        }
+      })
+      .catch((err) => {
+        toast(err?.response?.data?.message);
+      })
+      .finally(() => {
+        setEditBtn(false);
+      });
+  };
+
   return (
     <div className="__helper_header h-[50px] bg-black text-white p-2 flex justify-between items-center gap-1">
       <div className="__btn_container flex gap-1">
@@ -165,46 +199,62 @@ const HelperHeader = () => {
         >
           <Download size={16} />
         </Button>
+
         {saveBtn && (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button size={"icon"} variant={"secondary"}>
-                <Share2 size={16} />
+          <>
+            {isOwner && (
+              <Button
+                loading={editBtn}
+                size={"icon"}
+                onClick={() => {
+                  handleEditIcon();
+                }}
+                variant={"blue"}
+              >
+                <PencilLine size={16} />
               </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle className="flex gap-1 justify-center items-center">
-                  <Code /> Share your Code!
-                </DialogTitle>
-                <DialogDescription className=" flex flex-col gap-2">
-                  <div className="__url flex gap-1">
-                    <input
-                      type="text"
-                      disabled
-                      className=" w-full px-2 py-2 rounded bg-slate-800 text-slate-400 select-none"
-                      value={window.location.href}
-                    />
-                    <Button
-                      variant={"outline"}
-                      onClick={() => {
-                        window.navigator.clipboard.writeText(
-                          window.location.href
-                        );
-                        toast("URL Copied to your clipboard!");
-                      }}
-                    >
-                      {" "}
-                      <Copy size={14} />{" "}
-                    </Button>
-                  </div>
-                  <p className="text-center">
-                    Share this url with your friends to collabrate.
-                  </p>
-                </DialogDescription>
-              </DialogHeader>
-            </DialogContent>
-          </Dialog>
+            )}
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button size={"icon"} variant={"secondary"}>
+                  <Share2 size={16} />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle className="flex gap-1 justify-center items-center">
+                    <Code /> Share your Code!
+                  </DialogTitle>
+                  <DialogDescription className=" flex flex-col gap-2">
+                    <div className="__url flex gap-1">
+                      <input
+                        type="text"
+                        disabled
+                        className=" w-full px-2 py-2 rounded bg-slate-800 text-slate-400 select-none"
+                        value={window.location.href}
+                      />
+                      <Button
+                        variant={"outline"}
+                        onClick={() => {
+                          window.navigator.clipboard.writeText(
+                            window.location.href
+                          );
+                          toast("URL Copied to your clipboard!");
+                        }}
+                      >
+                        {" "}
+                        <Copy size={14} />{" "}
+                      </Button>
+                    </div>
+                    <p className="text-center">
+                      Share this url with your friends to collabrate.
+                    </p>
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
+          </>
         )}
       </div>
       <div className="__tab_switcher">

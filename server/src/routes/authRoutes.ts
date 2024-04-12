@@ -27,11 +27,13 @@ authRouter.get(
 authRouter.post("/logout", (req, res) => {
   try {
     res.clearCookie("token");
+    res.clearCookie("connect.sid");
     req.session.destroy((err) => {
       if (err) {
         console.log(err);
       }
     });
+
     return res
       .status(200)
       .json({ status: true, message: "Logged out successfully!" });

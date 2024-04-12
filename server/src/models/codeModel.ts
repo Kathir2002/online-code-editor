@@ -11,21 +11,24 @@ interface CodeSchema {
   ownerName: string;
 }
 
-const codeSchema = new mongoose.Schema<CodeSchema>({
-  fullCode: {
-    html: String,
-    css: String,
-    javascript: String,
+const codeSchema = new mongoose.Schema<CodeSchema>(
+  {
+    fullCode: {
+      html: String,
+      css: String,
+      javascript: String,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+    ownerInfo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    ownerName: String,
   },
-  title: {
-    type: String,
-    required: true,
-  },
-  ownerInfo: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
-  ownerName: String,
-});
+  { timestamps: true }
+);
 
 export const Code = mongoose.model("Code", codeSchema);

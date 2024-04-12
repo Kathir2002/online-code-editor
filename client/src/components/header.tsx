@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { updateCurrentUser, updateIsLoggedin } from "@/redux/slices/appSlice";
 import { useState } from "react";
+import { updateIsOwner } from "@/redux/slices/compilerSlice";
 
 const Header = () => {
   const [loading, setLoading] = useState(false);
@@ -35,6 +36,7 @@ const Header = () => {
               username: "",
             })
           );
+          dispatch(updateIsOwner(false));
           toast(res?.data?.message);
         }
       })

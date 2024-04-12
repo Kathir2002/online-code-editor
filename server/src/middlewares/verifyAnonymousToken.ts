@@ -8,10 +8,6 @@ export const verifyAnonymousToken = async (
   next: NextFunction
 ) => {
   const token = req.cookies.token;
-  console.log(
-    req.isAuthenticated(),
-    "req.isAuthenticated() from verify token page"
-  );
 
   if (req.isAuthenticated()) {
     const user = await User.findOne({ email: req?.user?.email });

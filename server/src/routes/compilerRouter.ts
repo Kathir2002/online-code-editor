@@ -7,4 +7,7 @@ export const compilerRouter = express.Router();
 
 compilerRouter.post("/save", verifyAnonymousToken, Compiler.saveCode);
 compilerRouter.get("/my-codes", verifyToken, Compiler.getMyCodes);
-compilerRouter.post("/getCode", Compiler.getCode);
+compilerRouter.post("/getCode", verifyAnonymousToken, Compiler.getCode);
+compilerRouter.delete("/delete/:id", verifyToken, Compiler.deleteCode);
+compilerRouter.put("/edit/:id", verifyToken, Compiler.editCode);
+compilerRouter.get("/get-all-codes", Compiler.getAllCodes);
