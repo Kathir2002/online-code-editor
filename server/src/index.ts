@@ -8,15 +8,17 @@ import { compilerRouter } from "./routes/compilerRouter";
 import { authRouter } from "./routes/authRoutes";
 import session from "express-session";
 import passport from "passport";
+import morgan from "morgan";
 import "./passport/googlePassport";
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-
+app.use(morgan("tiny"));
 app.use(
   cors({
     credentials: true,
+    // origin: "http://localhost:3000",
     origin: "https://kathir-code-editor.netlify.app",
   })
 );
