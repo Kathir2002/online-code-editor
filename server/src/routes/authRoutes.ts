@@ -20,7 +20,14 @@ authRouter.get(
     session: true,
   }),
   function (req, res) {
-    res.redirect(process.env.CLIENT_BASE_URL as string);
+    console.log(req.user, "from passport code");
+
+    if (!req.user) {
+      console.log("User not found!");
+    } else {
+      res.redirect(process.env.CLIENT_BASE_URL as string);
+      console.log("signed in");
+    }
   }
 );
 
