@@ -27,6 +27,8 @@ passport.use(
       profile: any,
       done: any
     ) {
+      console.log(profile, "--------------");
+
       const user = await User.findOne({ email: profile?._json?.email });
       // signup
       if (!user) {
