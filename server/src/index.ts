@@ -18,7 +18,6 @@ app.use(morgan("tiny"));
 app.use(
   cors({
     credentials: true,
-    // origin: "http://localhost:3000",
     origin: "https://kathir-code-editor.netlify.app",
   })
 );
