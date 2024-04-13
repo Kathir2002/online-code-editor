@@ -4,9 +4,10 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
-    "build": "npm install",
+    "build": "tsc --build",
     "dev": "nodemon src/index.ts",
-    "start": "nodemon src/index.ts"
+    "start": "node src/index.js",
+    "postbuild": "mv node_modules ./dist"
   },
   "keywords": [],
   "author": "",
