@@ -6,6 +6,7 @@ import { connectMongoDB } from "./src/lib/dbConnect";
 import cookieParser from "cookie-parser";
 import { compilerRouter } from "./src/routes/compilerRouter";
 import { authRouter } from "./src/routes/authRoutes";
+import MongoStore from "connect-mongo";
 import session from "express-session";
 import passport from "passport";
 import morgan from "morgan";
@@ -22,8 +23,17 @@ app.use(
   })
 );
 
+// required for passport session
 app.use(
-  session({ secret: "keyboard cat", resave: false, saveUninitialized: false })
+  session({
+    secret: "secrettexthere",
+    saveUninitialized: true,
+    resave: true,
+    store: new MongoStore({
+      mongoUrl: process.env.MONGO_CONNECT_URI!,
+      collectionName: "sessions",
+    }),
+  })
 );
 
 app.use(passport.initialize());
