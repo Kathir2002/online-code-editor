@@ -2,10 +2,9 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.ts",
+  "main": "index.js",
   "scripts": {
-    "build": "tsc --build",
-    "dev": "nodemon src/index.ts",
+    "build": "cd server && tsc --build && cd ..  && npm install --prefix client && npm run build --prefix client",
     "start": "node dist/index.js",
     "postbuild": "mv node_modules ./dist"
   },

@@ -1,5 +1,5 @@
 import express from "express";
-import cors from "cors";
+// import cors from "cors";
 import { config } from "dotenv";
 config();
 import { connectMongoDB } from "./lib/dbConnect";
@@ -15,12 +15,12 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("tiny"));
-app.use(
-  cors({
-    credentials: true,
-    origin: "https://kathir-code-editor.netlify.app",
-  })
-);
+// app.use(
+//   cors({
+//     credentials: true,
+//     origin: "https://kathir-code-editor.netlify.app",
+//   })
+// );
 
 app.use(
   session({ secret: "keyboard cat", resave: false, saveUninitialized: false })
