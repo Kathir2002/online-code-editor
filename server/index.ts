@@ -4,6 +4,7 @@ import { config } from "dotenv";
 config();
 import { connectMongoDB } from "./lib/dbConnect";
 import cookieParser from "cookie-parser";
+import path from "path";
 import { compilerRouter } from "./routes/compilerRouter";
 import { authRouter } from "./routes/authRoutes";
 import session from "express-session";
@@ -21,6 +22,7 @@ app.use(morgan("tiny"));
 //     origin: "https://kathir-code-editor.netlify.app",
 //   })
 // );
+const dirname = path.resolve();
 
 app.use(
   session({ secret: "keyboard cat", resave: false, saveUninitialized: false })
@@ -33,6 +35,12 @@ app.use("/api/compiler", compilerRouter);
 app.use("/api/auth", authRouter);
 
 connectMongoDB();
+
+app.use(express.static(path.join(dirname, "/client/dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(dirname, "client", "dist", "index.html"));
+});
 
 app.listen(5000, () => {
   console.log("server connected to Port : 5000");
