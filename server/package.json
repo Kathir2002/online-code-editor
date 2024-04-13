@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon server/index.ts",
-    "build": "npm install && cd server && tsc --build && cd ..  && npm install --prefix client && npm run build --prefix client",
+    "build": "tsc --build",
     "start": "node dist/index.js",
-    "postbuild": "mv node_modules ./server/dist"
+    "postbuild": "mv node_modules ./dist"
   },
   "keywords": [],
   "author": "",
