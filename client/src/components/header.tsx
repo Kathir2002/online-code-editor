@@ -13,7 +13,7 @@ import { updateIsOwner } from "@/redux/slices/compilerSlice";
 const Header = () => {
   const [loading, setLoading] = useState(false);
   const isLoggedin = useSelector(
-    (state: RootState) => state.appSlice.isLoggedin
+    (state: RootState) => state.appSlice.isLoggedIn
   );
   const currentUser = useSelector(
     (state: RootState) => state.appSlice.currentUser
@@ -31,7 +31,7 @@ const Header = () => {
           dispatch(
             updateCurrentUser({
               email: "",
-              savedCode: [],
+              savedCodes: [],
               picture: "",
               username: "",
             })

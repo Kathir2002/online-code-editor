@@ -1,6 +1,8 @@
 import { Suspense, lazy } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Loader from "./components/loader/loader";
+import { useSelector } from "react-redux";
+import { RootState } from "./redux/store";
 
 const Home = lazy(() => import("./pages/home"));
 const Login = lazy(() => import("./pages/login"));
@@ -10,7 +12,11 @@ const NotFound = lazy(() => import("./pages/notFound"));
 const AllCodes = lazy(() => import("./pages/allCodes"));
 const MyCodes = lazy(() => import("./pages/myCodes"));
 
-export default function AllRoutes({ authUser }: any) {
+export default function AllRoutes() {
+  const isLoggedin = useSelector(
+    (state: RootState) => state.appSlice.isLoggedIn
+  );
+
   return (
     <Suspense
       fallback={
@@ -23,16 +29,16 @@ export default function AllRoutes({ authUser }: any) {
         <Route path="/" element={<Home />} />
         <Route
           path="/login"
-          element={!authUser ? <Login /> : <Navigate to={"/"} />}
+          element={!isLoggedin ? <Login /> : <Navigate to={"/"} />}
         />
         <Route
           path="/signup"
-          element={!authUser ? <Signup /> : <Navigate to={"/"} />}
+          element={!isLoggedin ? <Signup /> : <Navigate to={"/"} />}
         />
         <Route path="/all-codes" element={<AllCodes />} />
         <Route
           path="/my-codes"
-          element={authUser ? <MyCodes /> : <Navigate to={"/login"} />}
+          element={isLoggedin ? <MyCodes /> : <Navigate to={"/login"} />}
         />
         <Route path="/compiler/:urlId?" element={<Compiler />} />
         <Route path="*" element={<NotFound />} />
