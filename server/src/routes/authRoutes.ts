@@ -35,7 +35,7 @@ authRouter.get(
 
 authRouter.post("/logout", (req, res) => {
   try {
-    res.clearCookie("token");
+    res.clearCookie("token", { path: "/", sameSite: "none", secure: true });
     res.clearCookie("connect.sid");
     req.session.destroy((err) => {
       if (err) {
