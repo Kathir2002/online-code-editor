@@ -10,7 +10,11 @@ authRouter.post("/login", Auth.login);
 
 authRouter.get(
   "/google",
-  passport.authenticate("google", { scope: ["email", "profile"] })
+  passport.authenticate("google", {
+    scope: ["email", "profile"],
+    prompt: "consent",
+    session: true,
+  })
 );
 
 authRouter.get(
