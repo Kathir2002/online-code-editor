@@ -41,7 +41,7 @@ passport.use(
         username: profile?.profile?._json?.name,
       });
       // signup
-      if (!userByEmail && !userByName) {
+      if (!userByEmail || !userByName) {
         const newUser = new User({
           username: profile?._json?.name,
           email: profile?._json?.email,
