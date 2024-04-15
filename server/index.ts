@@ -28,7 +28,7 @@ app.use(
     secret: "keyboard cat",
     resave: false,
     saveUninitialized: true,
-    cookie: { sameSite: "none", secure: true },
+    cookie: { secure: true },
   })
 );
 
