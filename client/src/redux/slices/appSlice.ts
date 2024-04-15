@@ -1,23 +1,17 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-
 export interface appSliceState {
   currentUser: {
     username?: string;
     picture?: string;
-    email: string;
-    savedCode: string[];
+    email?: string;
+    savedCodes?: string[];
   };
-  isLoggedin: boolean;
+  isLoggedIn: boolean;
 }
 
 const initialState: appSliceState = {
-  currentUser: {
-    username: "",
-    email: "",
-    savedCode: [],
-    picture: "",
-  },
-  isLoggedin: false,
+  currentUser: {},
+  isLoggedIn: false,
 };
 
 const appSlice = createSlice({
@@ -31,11 +25,10 @@ const appSlice = createSlice({
       state.currentUser = action.payload;
     },
     updateIsLoggedin: (state, action: PayloadAction<boolean>) => {
-      state.isLoggedin = action.payload;
+      state.isLoggedIn = action.payload;
     },
   },
 });
 
 export default appSlice.reducer;
-
 export const { updateCurrentUser, updateIsLoggedin } = appSlice.actions;

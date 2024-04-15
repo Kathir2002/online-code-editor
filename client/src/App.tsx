@@ -2,31 +2,24 @@ import Header from "./components/header";
 import { ThemeProvider } from "./components/theme-provider";
 import { Toaster } from "sonner";
 import { useEffect } from "react";
-import axios from "axios";
-import { apiUrlDB } from "./lib/utils";
 import { useDispatch } from "react-redux";
 import { updateCurrentUser, updateIsLoggedin } from "./redux/slices/appSlice";
 import AllRoutes from "./allRoutes";
+import { useGetUserDetailsQuery } from "./redux/slices/api";
 
 export default function App() {
+  const { data, error } = useGetUserDetailsQuery();
   const dispatch = useDispatch();
-  useEffect(() => {
-    getCurrentUser();
-  }, []);
 
-  const getCurrentUser = async () => {
-    axios
-      .get(`${apiUrlDB}/api/auth/user-details`, { withCredentials: true })
-      .then((res) => {
-        if (res?.data.status) {
-          dispatch(updateCurrentUser(res?.data?.user));
-          dispatch(updateIsLoggedin(true));
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+  useEffect(() => {
+    if (data) {
+      dispatch(updateCurrentUser(data.user));
+      dispatch(updateIsLoggedin(true));
+    } else if (error) {
+      dispatch(updateCurrentUser({}));
+      dispatch(updateIsLoggedin(false));
+    }
+  }, [data, error]);
   return (
     <>
       <Toaster position="bottom-right" theme="dark" />
