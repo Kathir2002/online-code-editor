@@ -24,15 +24,32 @@ app.use(
 );
 
 // required for passport session
+// app.use(
+//   session({
+//     secret: "secrettexthere",
+//     saveUninitialized: true,
+//     resave: true,
+//     store: new MongoStore({
+//       mongoUrl: process.env.MONGO_CONNECT_URI!,
+//       collectionName: "sessions",
+//     }),
+//   })
+// );
+
 app.use(
   session({
-    secret: "secrettexthere",
-    saveUninitialized: true,
-    resave: true,
+    secret: process.env.SESSION_SECRET!,
+    resave: false,
+    saveUninitialized: false,
     store: new MongoStore({
       mongoUrl: process.env.MONGO_CONNECT_URI!,
       collectionName: "sessions",
     }),
+    cookie: {
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      secure: true,
+      sameSite: "none",
+    },
   })
 );
 

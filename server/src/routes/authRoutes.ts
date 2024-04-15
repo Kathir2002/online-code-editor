@@ -20,8 +20,6 @@ authRouter.get(
     session: true,
   }),
   function (req, res) {
-    console.log(req.user, "from passport code");
-
     if (!req.user) {
       console.log("User not found!");
     } else {
