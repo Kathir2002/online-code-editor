@@ -17,6 +17,7 @@ export default function App() {
 
   const { authUser, loading }: any = useAuthContext();
   if (loading) return null;
+  console.log(loading, "=============loading=========================");
 
   const getCurrentUser = async () => {
     axios
