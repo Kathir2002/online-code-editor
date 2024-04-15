@@ -1,6 +1,7 @@
 import express from "express";
 import Auth from "../controllers/authControllers";
 import passport from "passport";
+import jwt from "jsonwebtoken";
 import { verifyToken } from "../middlewares/verifyToken";
 export const authRouter = express.Router();
 
@@ -22,15 +23,31 @@ authRouter.get(
     failureRedirect: process.env.CLIENT_BASE_URL + "/login",
     session: true,
   }),
-  function (req, res) {
-    console.log(req, res, "=======");
-
+  function (req: any, res) {
     if (!req.user) {
       console.log("User not found!");
     } else {
+      const jwtToken = jwt.sign(
+        {
+          _id: req.user._id,
+          email: req.user.email,
+        },
+        process.env.JWT_KEY as string,
+        {
+          expiresIn: "2h",
+        }
+      );
+
       // Explicitly save the session before redirecting!
       req.session.save(() => {
-        res.redirect(process.env.CLIENT_BASE_URL as string);
+        res
+          ?.cookie("token", jwtToken, {
+            path: "/",
+            expires: new Date(Date.now() + 1000 * 60 * 60 * 2),
+            sameSite: "none",
+            secure: true,
+          })
+          .redirect(process.env.CLIENT_BASE_URL as string);
       });
     }
   }
