@@ -3,12 +3,21 @@ import passport from "passport";
 import User from "../models/userModel";
 
 const GoogleStrategy = GoogleStrategyPassport.Strategy;
-passport.serializeUser((user, done) => {
-  done(null, user);
+// passport.serializeUser((user, done) => {
+//   done(null, user);
+// });
+
+passport.serializeUser(function (user: any, done) {
+  done(null, user.id);
 });
 
-passport.deserializeUser((obj: any, done) => {
-  done(null, obj);
+// passport.deserializeUser((obj: any, done) => {
+//   done(null, obj);
+// });
+passport.deserializeUser(function (id, done) {
+  User.findById(id, function (err: any, user: any) {
+    done(err, user);
+  });
 });
 
 passport.use(
