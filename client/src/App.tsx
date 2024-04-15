@@ -8,7 +8,7 @@ import AllRoutes from "./allRoutes";
 import { useGetUserDetailsQuery } from "./redux/slices/api";
 
 export default function App() {
-  const { data, error } = useGetUserDetailsQuery();
+  const { data, error, isLoading } = useGetUserDetailsQuery();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -20,6 +20,7 @@ export default function App() {
       dispatch(updateIsLoggedin(false));
     }
   }, [data, error]);
+  if (isLoading) return null;
   return (
     <>
       <Toaster position="bottom-right" theme="dark" />
