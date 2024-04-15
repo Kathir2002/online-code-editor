@@ -12,7 +12,11 @@ export const verifyToken = async (
   next: NextFunction
 ) => {
   const token = req.cookies.token;
-  console.log(req.isAuthenticated(), req.user, "=============================");
+  console.log(
+    req.isAuthenticated(),
+    req.cookies,
+    "============================="
+  );
 
   if (req.isAuthenticated()) {
     const user = await User.findOne({ email: req?.user?.email });
