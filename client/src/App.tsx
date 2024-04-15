@@ -7,12 +7,16 @@ import { apiUrlDB } from "./lib/utils";
 import { useDispatch } from "react-redux";
 import { updateCurrentUser, updateIsLoggedin } from "./redux/slices/appSlice";
 import AllRoutes from "./allRoutes";
+import { useAuthContext } from "./context/authContext";
 
 export default function App() {
   const dispatch = useDispatch();
   useEffect(() => {
     getCurrentUser();
   }, []);
+
+  const { authUser, loading }: any = useAuthContext();
+  if (loading) return null;
 
   const getCurrentUser = async () => {
     axios
@@ -32,7 +36,7 @@ export default function App() {
       <Toaster position="bottom-right" theme="dark" />
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <Header />
-        <AllRoutes />
+        <AllRoutes authUser={authUser} />
       </ThemeProvider>
     </>
   );
