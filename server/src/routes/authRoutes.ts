@@ -12,7 +12,6 @@ authRouter.get(
   "/google",
   passport.authenticate("google", {
     scope: ["email", "profile"],
-    prompt: "consent",
     session: true,
   })
 );
@@ -24,6 +23,8 @@ authRouter.get(
     session: true,
   }),
   function (req, res) {
+    console.log(req, res, "=======");
+
     if (!req.user) {
       console.log("User not found!");
     } else {

@@ -6,23 +6,22 @@ import { connectMongoDB } from "./src/lib/dbConnect";
 import cookieParser from "cookie-parser";
 import { compilerRouter } from "./src/routes/compilerRouter";
 import { authRouter } from "./src/routes/authRoutes";
-// import MongoStore from "connect-mongo";
 import session from "express-session";
 import passport from "passport";
 import morgan from "morgan";
 import "./src/passport/googlePassport";
 
 const app = express();
-app.use(express.json());
-app.use(cookieParser());
-app.use(morgan("tiny"));
-
 app.use(
   cors({
     origin: "https://kathir-code-editor.netlify.app",
     credentials: true,
   })
 );
+app.use(express.json());
+app.use(cookieParser());
+app.use(morgan("tiny"));
+
 app.use(
   session({
     secret: "keyboard cat",
