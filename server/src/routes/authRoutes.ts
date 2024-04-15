@@ -27,8 +27,10 @@ authRouter.get(
     if (!req.user) {
       console.log("User not found!");
     } else {
-      res.redirect(process.env.CLIENT_BASE_URL as string);
-      console.log("signed in");
+      // Explicitly save the session before redirecting!
+      req.session.save(() => {
+        res.redirect(process.env.CLIENT_BASE_URL as string);
+      });
     }
   }
 );
