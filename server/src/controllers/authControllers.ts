@@ -90,8 +90,8 @@ class auth {
         .cookie("token", jwtToken, {
           path: "/",
           expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
-          httpOnly: true,
-          sameSite: "lax",
+          sameSite: "none",
+          secure: true,
         })
         .json({ user: userData, token: jwtToken, status: true });
     } catch (error) {

@@ -16,25 +16,13 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("tiny"));
+
 app.use(
   cors({
-    credentials: true,
     origin: "https://kathir-code-editor.netlify.app",
+    credentials: true,
   })
 );
-
-// required for passport session
-// app.use(
-//   session({
-//     secret: "secrettexthere",
-//     saveUninitialized: true,
-//     resave: true,
-//     store: new MongoStore({
-//       mongoUrl: process.env.MONGO_CONNECT_URI!,
-//       collectionName: "sessions",
-//     }),
-//   })
-// );
 
 app.use(
   session({
@@ -43,10 +31,11 @@ app.use(
     saveUninitialized: false,
     store: new MongoStore({
       mongoUrl: process.env.MONGO_CONNECT_URI!,
+      autoRemove: "native",
+      ttl: 14 * 24 * 60 * 60,
       collectionName: "sessions",
     }),
     cookie: {
-      maxAge: 7 * 24 * 60 * 60 * 1000,
       secure: true,
       sameSite: "none",
     },
