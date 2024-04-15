@@ -6,7 +6,7 @@ import { connectMongoDB } from "./src/lib/dbConnect";
 import cookieParser from "cookie-parser";
 import { compilerRouter } from "./src/routes/compilerRouter";
 import { authRouter } from "./src/routes/authRoutes";
-import MongoStore from "connect-mongo";
+// import MongoStore from "connect-mongo";
 import session from "express-session";
 import passport from "passport";
 import morgan from "morgan";
@@ -23,24 +23,35 @@ app.use(
     credentials: true,
   })
 );
-
 app.use(
   session({
     secret: process.env.SESSION_SECRET!,
     resave: false,
     saveUninitialized: false,
-    store: new MongoStore({
-      mongoUrl: process.env.MONGO_CONNECT_URI!,
-      autoRemove: "native",
-      ttl: 14 * 24 * 60 * 60,
-      collectionName: "sessions",
-    }),
     cookie: {
       secure: true,
       sameSite: "none",
     },
   })
 );
+
+// app.use(
+//   session({
+//     secret: process.env.SESSION_SECRET!,
+//     resave: false,
+//     saveUninitialized: false,
+//     store: new MongoStore({
+//       mongoUrl: process.env.MONGO_CONNECT_URI!,
+//       autoRemove: "native",
+//       ttl: 14 * 24 * 60 * 60,
+//       collectionName: "sessions",
+//     }),
+//     cookie: {
+//       secure: true,
+//       sameSite: "none",
+//     },
+//   })
+// );
 
 app.use(passport.initialize());
 app.use(passport.session());
