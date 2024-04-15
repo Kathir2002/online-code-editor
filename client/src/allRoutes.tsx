@@ -1,6 +1,7 @@
 import { Suspense, lazy } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Loader from "./components/loader/loader";
+import { useAuthContext } from "./context/authContext";
 
 const Home = lazy(() => import("./pages/home"));
 const Login = lazy(() => import("./pages/login"));
@@ -10,7 +11,10 @@ const NotFound = lazy(() => import("./pages/notFound"));
 const AllCodes = lazy(() => import("./pages/allCodes"));
 const MyCodes = lazy(() => import("./pages/myCodes"));
 
-export default function AllRoutes({ authUser }: any) {
+export default function AllRoutes() {
+  const { authUser, loading }: any = useAuthContext();
+  if (loading) return null;
+
   return (
     <Suspense
       fallback={
