@@ -24,7 +24,12 @@ app.use(
   })
 );
 app.use(
-  session({ secret: "keyboard cat", resave: false, saveUninitialized: true })
+  session({
+    secret: "keyboard cat",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { path: "/", sameSite: "none", secure: true },
+  })
 );
 
 app.use(passport.initialize());
