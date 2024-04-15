@@ -32,7 +32,7 @@ class auth {
         picture: user.picture,
         savedCodes: [],
       };
-      return res.status(201).json({
+      return res.status(200).json({
         user: userData,
         status: true,
         message: "Account created successfully!",
@@ -51,10 +51,7 @@ class auth {
       let existingUser: any = undefined;
       if (userId.includes("@")) {
         existingUser = await User.findOne({ email: userId });
-      } else {
-        existingUser = await User.findOne({ username: userId });
       }
-
       if (!existingUser) {
         return res.status(400).json({ message: "User not found" });
       }

@@ -36,12 +36,9 @@ passport.use(
       profile: any,
       done: any
     ) {
-      const userByEmail = await User.findOne({ email: profile?._json?.email });
-      const userByName = await User.findOne({
-        username: profile?.profile?._json?.name,
-      });
+      const user = await User.findOne({ email: profile?._json?.email });
       // signup
-      if (!userByEmail || !userByName) {
+      if (!user) {
         const newUser = new User({
           username: profile?._json?.name,
           email: profile?._json?.email,
@@ -51,7 +48,7 @@ passport.use(
         await newUser.save();
         done(null, newUser);
       } else {
-        done(null, userByEmail ? userByEmail : userByName);
+        done(null, user);
       }
     }
   )

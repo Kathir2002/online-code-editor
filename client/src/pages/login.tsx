@@ -84,7 +84,7 @@ const Login = () => {
                     <Input
                       required
                       disabled={loading}
-                      placeholder="Username or Email"
+                      placeholder="Email"
                       {...field}
                     />
                   </FormControl>
