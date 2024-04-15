@@ -48,10 +48,8 @@ class auth {
     const { userId, password }: { userId: string; password: string } = req.body;
 
     try {
-      let existingUser: any = undefined;
-      if (userId.includes("@")) {
-        existingUser = await User.findOne({ email: userId });
-      }
+      const existingUser = await User.findOne({ email: userId });
+
       if (!existingUser) {
         return res.status(400).json({ message: "User not found" });
       }
