@@ -3,6 +3,7 @@ import Auth from "../controllers/authControllers";
 import passport from "passport";
 import jwt from "jsonwebtoken";
 import { verifyToken } from "../middlewares/verifyToken";
+import { encryptDetails } from "../lib/functions";
 export const authRouter = express.Router();
 
 authRouter.get("/user-details", verifyToken, Auth.userDetails);
@@ -37,11 +38,11 @@ authRouter.get(
           expiresIn: "2h",
         }
       );
-
+      const encryptedToken = encryptDetails(jwtToken);
       // Explicitly save the session before redirecting!
       req.session.save(() => {
         res
-          ?.cookie("token", jwtToken, {
+          ?.cookie("token", encryptedToken, {
             path: "/",
             expires: new Date(Date.now() + 1000 * 60 * 60 * 2),
             sameSite: "none",

@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/userModel";
 import { AuthRequest } from "../middlewares/verifyToken";
+import { encryptDetails } from "../lib/functions";
 
 class auth {
   async signup(req: Request, res: Response) {
@@ -56,7 +57,7 @@ class auth {
       if (existingUser && !existingUser.password) {
         return res?.status(400).json({
           message:
-            'Please login to your account with "Login With Google" option',
+            'Please login to your account with "Continue With Google" option',
         });
       }
 
@@ -86,9 +87,10 @@ class auth {
         picture: existingUser.picture,
         savedCodes: existingUser.savedCodes,
       };
+      const encryptedToken = encryptDetails(jwtToken);
       return res
         .status(200)
-        .cookie("token", jwtToken, {
+        .cookie("token", encryptedToken, {
           path: "/",
           expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
           sameSite: "none",

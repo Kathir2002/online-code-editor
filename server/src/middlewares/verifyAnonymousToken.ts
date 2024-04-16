@@ -1,15 +1,21 @@
 import { NextFunction, Response } from "express";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
+import { decryptDetails } from "../lib/functions";
 
 export const verifyAnonymousToken = async (
   req: any,
   res: Response,
   next: NextFunction
 ) => {
-  const token = req.cookies.token;
-  if (!token) {
+  if (!req?.headers?.cookie?.includes("token")) {
     return next();
   } else {
+    const encryptedTokenString = req.headers.cookie.match(/token=([^;]*)/)[1];
+
+    // Decoding URI component
+    const encryptedToken = decodeURIComponent(encryptedTokenString);
+
+    const token: string = decryptDetails(encryptedToken)!;
     jwt.verify(
       token,
       process.env.JWT_KEY!,
