@@ -53,13 +53,11 @@ class auth {
       if (!existingUser) {
         return res.status(400).json({ message: "User not found" });
       }
-      if (existingUser && !password) {
-        return res
-          ?.status(400)
-          .json({
-            message:
-              'Please login to your account with "Login With Google" option',
-          });
+      if (existingUser && !existingUser.password) {
+        return res?.status(400).json({
+          message:
+            'Please login to your account with "Login With Google" option',
+        });
       }
 
       const passwordMatched = await bcrypt.compare(

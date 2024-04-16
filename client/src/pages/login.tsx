@@ -82,6 +82,7 @@ const Login = () => {
                 <FormItem>
                   <FormControl>
                     <Input
+                      type="email"
                       required
                       disabled={loading}
                       placeholder="Email"

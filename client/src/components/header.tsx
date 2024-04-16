@@ -49,7 +49,7 @@ const Header = () => {
   return (
     <nav className="w-full h-[60px] bg-gray-900 text-white p-3 flex justify-between items-center ">
       <Link to={"/"}>
-        <h2 className="font-bold select-none ">LK Compiler</h2>
+        <h2 className="font-bold select-none ">Code Editor</h2>
       </Link>
       <ul className=" flex gap-2   ">
         <li>
@@ -59,9 +59,7 @@ const Header = () => {
         </li>
         <li>
           <Link to={"/all-codes"}>
-            <Button loading={loading} variant={"link"}>
-              All Codes
-            </Button>
+            <Button variant={"link"}>All Codes</Button>
           </Link>
         </li>
         {isLoggedin ? (
@@ -72,7 +70,11 @@ const Header = () => {
               </Link>
             </li>
             <li>
-              <Button onClick={() => logoutHandler()} variant={"destructive"}>
+              <Button
+                loading={loading}
+                onClick={() => logoutHandler()}
+                variant={"destructive"}
+              >
                 Logout
               </Button>
             </li>
