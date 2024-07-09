@@ -37,7 +37,7 @@ app.use("/api/compiler", compilerRouter);
 app.use("/api/auth", authRouter);
 
 connectMongoDB();
-
-app.listen(process.env.PORT || 8000, () => {
-  console.log("server connected to Port : 5000");
+const port = process.env.PORT || 8000;
+app.listen(port, () => {
+  console.log(`server connected to Port : ${port}`);
 });
