@@ -10,6 +10,7 @@ import session from "express-session";
 import passport from "passport";
 import morgan from "morgan";
 import "./src/passport/googlePassport";
+import bodyParser from "body-parser";
 
 const app = express();
 app.use(
@@ -18,7 +19,11 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json());
+// app.use(express.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app;
 app.use(cookieParser());
 app.use(morgan("tiny"));
 
