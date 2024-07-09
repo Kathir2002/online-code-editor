@@ -38,6 +38,6 @@ app.use("/api/auth", authRouter);
 
 connectMongoDB();
 
-app.listen(5000, () => {
+app.listen(process.env.PORT || 8000, () => {
   console.log("server connected to Port : 5000");
 });
