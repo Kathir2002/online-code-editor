@@ -26,7 +26,7 @@ passport.use(
       clientID: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_SECRET as string,
       callbackURL:
-        "https://online-code-editor.cyclic.app/api/auth/google/callback",
+        "https://online-code-editor-sable.vercel.app/api/auth/google/callback",
       passReqToCallback: true,
     },
     async function (
