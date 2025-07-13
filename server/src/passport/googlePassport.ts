@@ -11,14 +11,14 @@ passport.serializeUser(function (user: any, done) {
   done(null, user.id);
 });
 
-// passport.deserializeUser((obj: any, done) => {
-//   done(null, obj);
-// });
-passport.deserializeUser(function (id, done) {
-  User.findById(id, function (err: any, user: any) {
-    done(err, user);
-  });
+passport.deserializeUser((obj: any, done) => {
+  done(null, obj);
 });
+// passport.deserializeUser(function (id, done) {
+//   User.findById(id, function (err: any, user: any) {
+//     done(err, user);
+//   });
+// });
 
 passport.use(
   new GoogleStrategy(
@@ -26,7 +26,7 @@ passport.use(
       clientID: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_SECRET as string,
       callbackURL:
-        "https://online-code-editor-seven.vercel.app/api/auth/google/callback",
+        "http://localhost:8000/api/auth/google/callback",
       passReqToCallback: true,
     },
     async function (

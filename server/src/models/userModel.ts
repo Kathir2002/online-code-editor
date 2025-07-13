@@ -5,7 +5,10 @@ interface IUserSchema {
   email: string;
   password: string;
   picture: string;
+  profileUrl: string;
   savedCodes: Array<mongoose.Types.ObjectId>;
+  isFromGithub?: boolean;
+  githubAccessToken?: string;
 }
 
 const UserSchema = new mongoose.Schema<IUserSchema>(
@@ -14,10 +17,10 @@ const UserSchema = new mongoose.Schema<IUserSchema>(
       type: String,
       required: true,
       trim: true,
+      unique: true,
     },
     email: {
       type: String,
-      required: true,
       trim: true,
       unique: true,
     },
@@ -31,7 +34,20 @@ const UserSchema = new mongoose.Schema<IUserSchema>(
       default:
         "https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/default-profile-picture-grey-male-icon.png",
     },
+    profileUrl: {
+      type: String,
+      default: "https://github.com/Kathir2002",
+    },
+    isFromGithub: {
+      type: Boolean,
+      default: false,
+    },
+    githubAccessToken: {
+      type: String,
+      default: "",
+    },
     savedCodes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Code" }],
+
   },
   { timestamps: true }
 );

@@ -10,7 +10,7 @@ export const verifyToken = async (
   req: any,
   res: Response,
   next: NextFunction
-) => {
+) => {  
   if (!req?.headers?.cookie?.includes("token")) {
     return res.status(401).send({ message: "You are unauthorized." });
   } else {

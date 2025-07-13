@@ -32,13 +32,14 @@ import {
   updateCurrentLanguage,
 } from "@/redux/slices/compilerSlice";
 import { RootState } from "@/redux/store";
-import { useEffect, useState } from "react";
+import { MutableRefObject, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Input } from "./ui/input";
 import { apiUrlDB } from "@/lib/utils";
 
-const HelperHeader = () => {
+const HelperHeader = ({isCompiler,workerRef}:{isCompiler:boolean, workerRef:MutableRefObject<Worker | null> }) => {
+  
   const dispatch = useDispatch();
   const { urlId } = useParams();
   const navigate = useNavigate();
@@ -49,6 +50,7 @@ const HelperHeader = () => {
   const currentLanguage = useSelector(
     (state: RootState) => state.compilerSlice.currentLanguage
   );
+  
   const isOwner = useSelector(
     (state: RootState) => state.compilerSlice.isOwner
   );
@@ -112,10 +114,10 @@ const HelperHeader = () => {
       javascriptLink.download = `script.js`;
       document.body.appendChild(javascriptLink);
 
-      if (fullCode.html !== "") {
+      if (fullCode.html !== "" && !isCompiler) {
         htmlLink.click();
       }
-      if (fullCode.css !== "") {
+      if (fullCode.css !== "" && !isCompiler) {
         cssLink.click();
       }
       if (fullCode.javascript !== "") {
@@ -148,6 +150,14 @@ const HelperHeader = () => {
       .finally(() => {
         setEditBtn(false);
       });
+  };
+
+  const runCode = () => {
+    if (workerRef.current) {
+      console.log(fullCode.javascript, "Running code in worker");
+      
+      workerRef.current.postMessage(fullCode.javascript);
+    }
   };
 
   return (
@@ -257,28 +267,37 @@ const HelperHeader = () => {
           </>
         )}
       </div>
+      <div className="__tab_switcher flex items-center gap-2">
+      {isCompiler && <button onClick={() => runCode()} className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">
+        Run
+      </button>}
       <div className="__tab_switcher">
         <Select
-          defaultValue={currentLanguage}
-          onValueChange={(value) =>
+          value={currentLanguage}
+          onValueChange={(value) => {
             dispatch(
               updateCurrentLanguage(
                 value as compilerSliceStateType["currentLanguage"]
               )
-            )
+            )}
           }
         >
+         
           <SelectTrigger className="w-[120px] bg-gray-800 outline-none focus:ring-0">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectItem value="html">HTML</SelectItem>
-              <SelectItem value="css">CSS</SelectItem>
+              { !isCompiler ? <>
+                <SelectItem value="html">HTML</SelectItem>
+                <SelectItem value="css">CSS</SelectItem>
+              </> : undefined}
               <SelectItem value="javascript">JavaScript</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
+      </div>
+
       </div>
     </div>
   );

@@ -58,6 +58,11 @@ const Header = () => {
           </Link>
         </li>
         <li>
+          <Link to={"/code-editor"}>
+            <Button variant={"link"}>Online code Editor</Button>
+          </Link>
+        </li>
+        <li>
           <Link to={"/all-codes"}>
             <Button variant={"link"}>All Codes</Button>
           </Link>

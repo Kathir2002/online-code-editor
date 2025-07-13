@@ -14,6 +14,7 @@ const CodeEditior = () => {
   const currentLanguage = useSelector(
     (state: RootState) => state.compilerSlice.currentLanguage
   );
+
   const fullCode = useSelector(
     (state: RootState) => state.compilerSlice.fullCode
   );
@@ -22,6 +23,7 @@ const CodeEditior = () => {
     dispatch(updateCodeValue(value));
   }, []);
 
+  
   return (
     <CodeMirror
       theme={draculaInit({

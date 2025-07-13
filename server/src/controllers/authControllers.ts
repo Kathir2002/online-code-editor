@@ -76,9 +76,6 @@ class auth {
           email: existingUser.email,
         },
         process.env.JWT_KEY as string,
-        {
-          expiresIn: "1d",
-        }
       );
 
       const userData = {
@@ -90,11 +87,18 @@ class auth {
       const encryptedToken = encryptDetails(jwtToken);
       return res
         .status(200)
-        .cookie("token", encryptedToken, {
+        // .cookie("token", encryptedToken, {
+        //   path: "/",
+        //   expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+        //   sameSite: "none",
+        //   secure: true,
+        // })
+        ?.cookie("token", encryptedToken, {
           path: "/",
-          expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+          maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days in milliseconds
           sameSite: "none",
           secure: true,
+          httpOnly: true, // strongly recommended for security
         })
         .json({ user: userData, token: jwtToken, status: true });
     } catch (error) {
@@ -102,8 +106,7 @@ class auth {
     }
   }
   async userDetails(req: AuthRequest, res: Response) {
-    const userId = req._id;
-
+    const userId = req._id;    
     try {
       const user = await User.findById(userId);
       if (!user) {

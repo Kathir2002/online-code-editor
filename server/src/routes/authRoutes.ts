@@ -18,6 +18,8 @@ authRouter.get(
   })
 );
 
+authRouter.get("/github", passport.authenticate("github"));
+
 authRouter.get(
   "/google/callback",
   passport.authenticate("google", {
@@ -34,9 +36,6 @@ authRouter.get(
           email: req.user.email,
         },
         process.env.JWT_KEY as string,
-        {
-          expiresIn: "2h",
-        }
       );
       const encryptedToken = encryptDetails(jwtToken);
       // Explicitly save the session before redirecting!
@@ -49,6 +48,45 @@ authRouter.get(
             secure: true,
           })
           .redirect(process.env.CLIENT_BASE_URL as string);
+      });
+    }
+  }
+);
+
+authRouter.get(
+  "/github/callback",
+  passport.authenticate("github", {
+    failureRedirect: process.env.CLIENT_BASE_URL + "/login",
+    session: true,
+  }),
+  function (req:any, res) {    
+    if (!req.user) {
+      console.log("User not found!");
+    } else {
+      const jwtToken = jwt.sign(
+        {
+          _id: req.user._id,
+          email: req.user.username,
+        },
+        process.env.JWT_KEY!,
+      );
+      const encryptedToken = encryptDetails(jwtToken);
+      // Explicitly save the session before redirecting!
+      req.session.save(() => {
+        // res
+        //   ?.cookie("token", encryptedToken, {
+        //     path: "/",
+        //     expires: new Date(Date.now() + 1000 * 60 * 60 * 2),
+        //     sameSite: "none",
+        //     secure: true,
+        //   })
+        res?.cookie("token", encryptedToken, {
+          path: "/",
+          maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days in milliseconds
+          sameSite: "none",
+          secure: true,
+          httpOnly: true, // strongly recommended for security
+        }).redirect(process.env.CLIENT_BASE_URL!);
       });
     }
   }

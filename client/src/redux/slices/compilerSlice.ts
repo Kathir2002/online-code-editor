@@ -104,11 +104,14 @@ const compilerSlice = createSlice({
     updateCurrentLanguage: (
       state,
       action: PayloadAction<compilerSliceStateType["currentLanguage"]>
-    ) => {
+    ) => {      
       state.currentLanguage = action.payload;
     },
     updateCodeValue: (state, action: PayloadAction<string>) => {
       state.fullCode[state.currentLanguage] = action.payload;
+    },
+    updateJSCode: (state, action: PayloadAction<string>) => {
+      state.fullCode.javascript = action.payload;
     },
     updateIsOwner: (state, action: PayloadAction<boolean>) => {
       state.isOwner = action.payload;
@@ -129,4 +132,5 @@ export const {
   updateCodeValue,
   updateFullCode,
   updateIsOwner,
+  updateJSCode,
 } = compilerSlice.actions;

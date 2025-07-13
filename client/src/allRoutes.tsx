@@ -40,7 +40,8 @@ export default function AllRoutes() {
           path="/my-codes"
           element={isLoggedin ? <MyCodes /> : <Navigate to={"/login"} />}
         />
-        <Route path="/compiler/:urlId?" element={<Compiler />} />
+        <Route path="/compiler/:urlId?" element={<Compiler isCompiler={true} />} />
+        <Route path="/code-editor/:urlId?" element={<Compiler isCompiler={false} />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
