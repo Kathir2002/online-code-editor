@@ -9,6 +9,8 @@ interface IUserSchema {
   savedCodes: Array<mongoose.Types.ObjectId>;
   isFromGithub?: boolean;
   githubAccessToken?: string;
+  repoName?: string;
+  repoOwner?: string;
 }
 
 const UserSchema = new mongoose.Schema<IUserSchema>(
@@ -45,6 +47,12 @@ const UserSchema = new mongoose.Schema<IUserSchema>(
     githubAccessToken: {
       type: String,
       default: "",
+    },
+    repoName:{
+      type:String
+    },
+    repoOwner:{
+      type:String
     },
     savedCodes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Code" }],
 
