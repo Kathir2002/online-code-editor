@@ -12,7 +12,7 @@ export default function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (data) {
+    if (data) {      
       dispatch(updateCurrentUser(data.user));
       dispatch(updateIsLoggedin(true));
     } else if (error) {

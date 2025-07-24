@@ -10,6 +10,7 @@ interface CodeSchema {
   ownerInfo: mongoose.Types.ObjectId | string;
   ownerName: string;
   githubFilePath?: string;
+  filePath?: string;
 }
 
 const codeSchema = new mongoose.Schema<CodeSchema>(
@@ -28,9 +29,13 @@ const codeSchema = new mongoose.Schema<CodeSchema>(
       ref: "User",
     },
     ownerName: String,
-    githubFilePath:{
-      type:String
-    }
+    githubFilePath: {
+      type: String
+    },
+    filePath: {
+      type: String
+    },
+
   },
   { timestamps: true }
 );

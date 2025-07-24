@@ -8,20 +8,26 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { apiUrlDB } from "@/lib/utils";
-import { updateCodeValue, updateCurrentLanguage, updateFullCode, updateIsOwner, updateJSCode } from "@/redux/slices/compilerSlice";
+import { updateCodeValue, updateCurrentLanguage, updateFullCode, updateIsOwner } from "@/redux/slices/compilerSlice";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 
-const Compiler = ({isCompiler}:{isCompiler:boolean}) => {
-  
+const Compiler = ({ isCompiler }: { isCompiler: boolean }) => {
+
   const { urlId } = useParams();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState<boolean>(false);
   const workerRef = useRef<Worker | null>(null);
+  const [isFromCompiler, setIsFromCompiler] = useState(false)
 
+  useEffect(() => {
+    if (isCompiler != undefined) {
+      setIsFromCompiler(isCompiler)
+    }
+  }, [isCompiler])
 
   useEffect(() => {
     if (urlId) {
@@ -34,7 +40,17 @@ const Compiler = ({isCompiler}:{isCompiler:boolean}) => {
             { withCredentials: true }
           )
           .then((res) => {
-            dispatch(updateFullCode(res?.data?.fullCode));
+            dispatch(updateFullCode(res?.data?.data?.fullCode));
+            if (res?.data?.data?.githubFilePath) {
+              dispatch(updateCurrentLanguage("javascript"))
+              dispatch(updateCodeValue(res?.data?.data?.fullCode?.javascript));
+              setIsFromCompiler(true)
+            } else {
+              dispatch(updateCurrentLanguage("html"))
+              dispatch(updateCodeValue(res?.data?.data?.fullCode));
+              setIsFromCompiler(false)
+
+            }
             dispatch(updateIsOwner(res.data.isOwner));
             setLoading(false);
           })
@@ -46,47 +62,11 @@ const Compiler = ({isCompiler}:{isCompiler:boolean}) => {
               }
             }
           })
-        
+
       };
       getCode();
     }
   }, [urlId]);
-
-   useEffect(() => {
-    if(!loading) {
-      if(isCompiler) {
-        dispatch(updateCurrentLanguage("javascript"),"hai-hellpo")
-        dispatch(updateCodeValue(`// Online Javascript Editor for free
-// Write, Edit and Run your Javascript code using JS Online Compiler
-
-console.log("Hello World!");`));
-      } else {
-        dispatch(updateCurrentLanguage("html"));
-        dispatch(updateJSCode(`function addTask() {
-  var taskInput = document.getElementById("taskInput");
-  var taskText = taskInput.value.trim();
-      
-  if (taskText !== "") {
-    var taskList = document.getElementById("taskList");
-    var newTask = document.createElement("li");
-    newTask.textContent = taskText;
-    newTask.onclick = toggleTask;
-    taskList.appendChild(newTask);
-    taskInput.value = "";
-  } else {
-    alert("Please enter a task!");
-  }
-}
-    
-function toggleTask() {
-    this.classList.toggle("completed");
-}
-`));
-      }
-    }
-  },[isCompiler])
-
-  
 
   if (loading) {
     return (
@@ -102,7 +82,7 @@ function toggleTask() {
         className=" h-[calc(100dvh-60px)] min-w-[350px]"
         defaultSize={50}
       >
-        <HelperHeader isCompiler={isCompiler} workerRef={workerRef} />
+        <HelperHeader isCompiler={isFromCompiler} workerRef={workerRef} />
         <CodeEditior />
       </ResizablePanel>
       <ResizableHandle />
@@ -110,7 +90,7 @@ function toggleTask() {
         className=" h-[calc(100dvh-60px)] min-w-[350px] "
         defaultSize={50}
       >
-        <RenderCode workerRef={workerRef} isCompiler={isCompiler} />
+        <RenderCode workerRef={workerRef} isCompiler={isFromCompiler} />
       </ResizablePanel>
     </ResizablePanelGroup>
   );

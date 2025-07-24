@@ -2,46 +2,95 @@ import { Request, Response } from "express";
 import { Code } from "../models/codeModel";
 import User from "../models/userModel";
 import { AuthRequest } from "../middlewares/verifyToken";
+import axios from "axios";
 
 interface FullCodeType {
   fullCode: {
     html: string;
     css: string;
     javascript: string;
-  };
+  }
+  javascript: string
   title?: string;
+  isCompiler: boolean,
+  description?: string,
+  filePath?: string
 }
 class compiler {
   async saveCode(req: AuthRequest, res: Response) {
     try {
-      const { fullCode, title }: FullCodeType = req.body;
-      let ownerName = "Anonymous";
-      let user = undefined;
-      let ownerInfo = undefined;
-      let isAuthenticated = false;
+      const { fullCode, title, isCompiler, description, filePath, javascript }: FullCodeType = req.body;
 
-      if (req._id) {
-        user = await User.findById(req._id);
-        if (!user) return res.status(404).json({ message: "User not found" });
-        ownerName = user?.username;
-        ownerInfo = user._id;
-        isAuthenticated = true;
-      }
-      if (!fullCode.html || !fullCode.css || !fullCode.javascript)
+      const user = await User.findById(req._id);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      const isMissingCode = isCompiler
+        ? !javascript?.trim()
+        : !fullCode?.html?.trim() || !fullCode?.css?.trim() || !fullCode?.javascript?.trim();
+
+      if (isMissingCode) {
         return res.status(422).json({ message: "Code can't be blank!" });
+      }
+      let response;
+
+      if (isCompiler) {
+        if (!user?.isFromGithub) {
+          return res?.status(401).json({ message: "You need to login with github to use this feature", success: false })
+        }
+        if (!user?.repoName) {
+          return res.status(400).json({ message: "You need to create repo!" })
+        }
+        const encodedContent = Buffer.from(javascript).toString('base64');
+
+        let sha: string | undefined = undefined;
+        try {
+          const existing = await axios.get(`https://api.github.com/repos/${user?.repoOwner}/${user?.repoName?.split(" ").join("-")}/contents/${filePath}`, {
+            headers: {
+              Authorization: `Bearer ${user?.githubAccessToken}`,
+              Accept: 'application/vnd.github+json',
+            },
+          });
+
+          sha = existing.data.sha;
+
+        } catch (err: any) {
+          // File doesn't exist, so we'll create it (ignore 404)
+          if (err.response?.status !== 404) throw err;
+        }
+
+        // Step 2: Create or update the file
+        response = await axios.put(
+          `https://api.github.com/repos/${user?.repoOwner}/${user?.repoName?.split(" ").join("-")}/contents/${filePath}`,
+          {
+            message: description || `Update ${filePath}`,
+            content: encodedContent,
+            sha: sha, // only needed for updates
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${user?.githubAccessToken}`,
+              Accept: 'application/vnd.github+json',
+            },
+          });
+      }
+
       const newCode = await Code.create({
-        fullCode,
-        ownerName,
-        ownerInfo,
+        fullCode: isCompiler ? { javascript } : fullCode,
+        ownerName: user?.username,
+        ownerInfo: user?._id,
         title,
+        filePath: filePath,
+        githubFilePath: response?.data?.content?.html_url
       });
-      if (isAuthenticated && user) {
+
+      if (user) {
         user?.savedCodes.push(newCode._id);
         await user.save();
       }
-
       return res.status(201).json({ url: newCode._id, message: "Saved" });
     } catch (error) {
+      console.log(error);
+
       return res.status(500).json({ message: "Error in saving code", error });
     }
   }
@@ -61,9 +110,13 @@ class compiler {
         if (user?.username === existingCode.ownerName) {
           isOwner = true;
         }
+
         return res
           .status(200)
-          .json({ fullCode: existingCode.fullCode, isOwner, status: true });
+          .json({
+            data: existingCode,
+            isOwner, status: true
+          });
       } else {
         return res
           ?.status(422)
@@ -87,14 +140,6 @@ class compiler {
       res.status(500).json({ message: "Error loading my codes", error: err });
     }
   }
-  async getAllCodes(req: Request, res: Response) {
-    try {
-      const allCodes = await Code.find().sort({ createdAt: -1 });
-      return res.status(200).json(allCodes);
-    } catch (error) {
-      return res.status(500).json({ message: "Error geting code!", error });
-    }
-  }
 
   async deleteCode(req: AuthRequest, res: Response) {
     try {
@@ -116,7 +161,43 @@ class compiler {
           status: false,
         });
       }
+
+      if (existingCode?.githubFilePath) {
+        // Step 1: Get the file SHA
+        const fileInfo = await axios.get(`https://api.github.com/repos/${owner?.repoOwner}/${owner?.repoName}/contents/${existingCode?.filePath}`, {
+          headers: {
+            Authorization: `Bearer ${owner?.githubAccessToken}`,
+            Accept: 'application/vnd.github+json',
+          },
+          params: {
+            ref: 'main',
+          },
+        });
+
+        const sha = fileInfo.data.sha;
+
+        // Step 2: Delete the file
+        const response = await axios.delete(`https://api.github.com/repos/${owner?.repoOwner}/${owner?.repoName}/contents/${existingCode?.filePath}`, {
+          headers: {
+            Authorization: `Bearer ${owner?.githubAccessToken}`,
+            Accept: 'application/vnd.github+json',
+          },
+          data: {
+            message: `Delete ${existingCode?.filePath}`,
+            sha,
+            branch: 'main',
+          },
+        });
+      }
+
       const deleteCode = await Code.findByIdAndDelete(id);
+      // Filter out the code by its ObjectId
+      owner.savedCodes = owner.savedCodes?.filter(
+        savedCode => savedCode?._id.toString() !== id
+      );
+
+      // Save the updated user document
+      await owner.save();
       if (deleteCode) {
         return res
           .status(200)
@@ -136,7 +217,7 @@ class compiler {
       const userId = req._id;
       const postId = req.params.id;
       const owner = await User.findById(userId);
-      const { fullCode } = req.body;
+      const { fullCode, javascript } = req.body;
       if (!owner) {
         return res.status(404).json({ message: "Can't find owner!" });
       }
@@ -149,8 +230,46 @@ class compiler {
           .status(400)
           .json({ message: "You can only edit your own code!" });
       }
+
+      let response;
+      if (existingPost?.githubFilePath) {
+        if (existingPost?.githubFilePath ? !javascript : !fullCode) {
+          return res.status(422).json({ message: "Code can't be blank!", success: false })
+        }
+        let sha: string | undefined = undefined;
+        const encodedContent = Buffer.from(fullCode).toString('base64');
+        try {
+          const existing = await axios.get(`https://api.github.com/repos/${owner?.repoOwner}/${owner?.repoName?.split(" ").join("-")}/contents/${existingPost?.filePath}`, {
+            headers: {
+              Authorization: `Bearer ${owner?.githubAccessToken}`,
+              Accept: 'application/vnd.github+json',
+            },
+          });
+
+          sha = existing.data.sha;
+
+        } catch (err: any) {
+          // File doesn't exist, so we'll create it (ignore 404)
+          if (err.response?.status !== 404) throw err;
+        }
+
+        // Step 2: Create or update the file
+        response = await axios.put(
+          `https://api.github.com/repos/${owner?.repoOwner}/${owner?.repoName?.split(" ").join("-")}/contents/${existingPost?.filePath}`,
+          {
+            message: `Updated ${existingPost?.filePath}`,
+            content: encodedContent,
+            sha: sha, // only needed for updates
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${owner?.githubAccessToken}`,
+              Accept: 'application/vnd.github+json',
+            },
+          });
+      }
       const editPost = await Code.findByIdAndUpdate(postId, {
-        fullCode: fullCode,
+        fullCode: existingPost?.githubFilePath ? { javascript } : fullCode,
       });
       if (editPost) {
         return res

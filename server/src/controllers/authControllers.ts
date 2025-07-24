@@ -79,10 +79,14 @@ class auth {
       );
 
       const userData = {
-        username: existingUser.username,
-        email: existingUser.email,
-        picture: existingUser.picture,
-        savedCodes: existingUser.savedCodes,
+        username: existingUser?.username,
+        email: existingUser?.email,
+        picture: existingUser?.picture,
+        savedCodes: existingUser?.savedCodes,
+        profileUrl: existingUser?.profileUrl,
+        isFromGithub: existingUser?.isFromGithub,      
+        repoName: existingUser?.repoName,
+        repoOwner: existingUser?.repoOwner,
       };
       const encryptedToken = encryptDetails(jwtToken);
       return res
@@ -112,12 +116,17 @@ class auth {
       if (!user) {
         return res.status(404).json({ message: "No user found" });
       }
+      
       const userData = {
         username: user.username,
         email: user.email,
         picture: user.picture,
         savedCodes: user.savedCodes,
-      };
+        profileUrl: user.profileUrl,
+        isFromGithub: user.isFromGithub,      
+        repoName: user.repoName,
+        repoOwner: user.repoOwner,
+      }
       res.status(200).json({ user: userData, status: true });
     } catch (error) {
       res.status(500).json({ message: "Can't fetch user details" });

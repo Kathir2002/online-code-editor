@@ -43,6 +43,7 @@ const CodeItem = ({
         setIsLoading(false);
       });
   };
+
   return (
     <div className="p-3 rounded cursor-pointer bg-slate-900 flex justify-start items-center flex-col gap-3">
       <div className="__top flex justify-start items-start gap-3 w-full">
@@ -51,11 +52,11 @@ const CodeItem = ({
       </div>
       <Separator />
       <div className="__btn_container flex gap-3">
-        <Link target="_blank" to={`/compiler/${data._id}`}>
+        <Link target="_blank" to={data?.githubFilePath ? `/code-editor/${data._id}` : `/compiler/${data._id}`}>
           <Button variant="secondary">Open Code</Button>
         </Link>
         {isDeleteBtnVisible && (
-          <Dialog open={isOpen}>
+          <Dialog open={isOpen} onOpenChange={setIsOpen} >
             <DialogTrigger asChild>
               <Button
                 onClick={() => setIsOpen(true)}

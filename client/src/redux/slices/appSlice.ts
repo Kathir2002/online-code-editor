@@ -5,6 +5,10 @@ export interface appSliceState {
     picture?: string;
     email?: string;
     savedCodes?: string[];
+    profileUrl?: string,
+    isFromGithub?: boolean,      
+    repoName?: string,
+    repoOwner?: string,
   };
   isLoggedIn: boolean;
 }
