@@ -19,7 +19,7 @@ import { verifyToken } from "./src/middlewares/verifyToken";
 const app = express();
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://sniplet.netlify.app"],
+    origin: ["https://sniplet.netlify.app"],
     credentials: true,
   })
 );
