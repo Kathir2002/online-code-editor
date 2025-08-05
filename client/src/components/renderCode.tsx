@@ -1,14 +1,17 @@
 import { RootState } from "@/redux/store";
 import { MutableRefObject, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-const CodeWorker = new URL('../worker/codeRunner.worker.ts', import.meta.url);
+// const CodeWorker = new URL('../worker/codeRunner.worker.ts', import.meta.url);
+import CodeRunnerWorker from '../worker/codeRunner.worker.ts?worker';
 
-export default function RenderCode({isCompiler ,workerRef}: { isCompiler: boolean, workerRef:MutableRefObject<Worker | null> }) {
+export default function RenderCode({ isCompiler, workerRef }: { isCompiler: boolean, workerRef: MutableRefObject<Worker | null> }) {
   // const workerRef = useRef<Worker | null>(null);
   const [output, setOutput] = useState('');
 
   useEffect(() => {
-    const worker = new Worker(CodeWorker, { type: 'module' });
+    // const worker = new Worker(CodeWorker, { type: 'module' });
+    // workerRef.current = worker;
+    const worker = new CodeRunnerWorker();
     workerRef.current = worker;
 
     worker.onmessage = (e: MessageEvent<{ output: string }>) => {
@@ -21,7 +24,7 @@ export default function RenderCode({isCompiler ,workerRef}: { isCompiler: boolea
     };
   }, []);
 
-   
+
 
   const fullCode = useSelector(
     (state: RootState) => state.compilerSlice.fullCode
@@ -43,11 +46,11 @@ export default function RenderCode({isCompiler ,workerRef}: { isCompiler: boolea
         )
       }
       {
-        isCompiler ? 
-        (<pre className="p-4 bg-gray-100 h-full overflow-auto">
+        isCompiler ?
+          (<pre className="p-4 bg-gray-100 h-full overflow-auto">
             <p className="text-black">{output}</p>
-        </pre>):
-        <iframe className="w-full h-full" src={iframeCode} /> 
+          </pre>) :
+          <iframe className="w-full h-full" src={iframeCode} />
 
       }
     </div>
