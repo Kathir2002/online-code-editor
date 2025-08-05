@@ -1,20 +1,23 @@
 {
-  "name": "server",
+  "name": "sniplet-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
+  "main": "index.js",
   "scripts": {
-    "build": "tsc --build",
+    "clean-dist": "if exist dist rmdir /s /q dist && mkdir dist || mkdir dist",
+    "build": "npm run clean-dist && tsc && npm run copy-files && npm run copy-node_modules",
+    "copy-files": "xcopy src dist\\src /E /H /C /I && xcopy *.json dist /C /I && xcopy .env dist /C /I && xcopy .catalystrc dist /C /I",
+    "copy-node_modules": "xcopy node_modules dist\\node_modules /E /H /C /I",
+    "start": "node index.js",
     "dev": "nodemon index.ts",
-    "start": "node dist/index.js",
-    "postbuild": "mv node_modules ./dist"
+    "deploy": "npm run build && cd dist && catalyst deploy"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "axios": "^1.10.0",
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
     "body-parser": "^2.0.0-beta.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -29,7 +32,6 @@
     "passport-google-oauth2": "^0.2.0"
   },
   "devDependencies": {
-    "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
     "@types/crypto-js": "^4.2.2",

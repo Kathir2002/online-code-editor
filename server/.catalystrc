@@ -1,0 +1,30 @@
+{
+  "defaults": {
+    "project": 1,
+    "env": 1
+  },
+  "actives": {
+    "project": 1,
+    "env": 1
+  },
+  "projects": [
+    {
+      "idx": 1,
+      "id": "8236000000024001",
+      "name": "sniplet",
+      "domain": {
+        "id": "50029808958",
+        "name": "sniplet-60030778002.development"
+      },
+      "timezone": "Asia/Kolkata",
+      "env": [
+        {
+          "idx": 1,
+          "id": "60030778002",
+          "name": "Development",
+          "type": 3
+        }
+      ]
+    }
+  ]
+}

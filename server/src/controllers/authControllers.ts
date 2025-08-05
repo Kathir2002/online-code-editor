@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/userModel";
 import { AuthRequest } from "../middlewares/verifyToken";
@@ -84,7 +84,7 @@ class auth {
         picture: existingUser?.picture,
         savedCodes: existingUser?.savedCodes,
         profileUrl: existingUser?.profileUrl,
-        isFromGithub: existingUser?.isFromGithub,      
+        isFromGithub: existingUser?.isFromGithub,
         repoName: existingUser?.repoName,
         repoOwner: existingUser?.repoOwner,
       };
@@ -110,20 +110,20 @@ class auth {
     }
   }
   async userDetails(req: AuthRequest, res: Response) {
-    const userId = req._id;    
+    const userId = req._id;
     try {
       const user = await User.findById(userId);
       if (!user) {
         return res.status(404).json({ message: "No user found" });
       }
-      
+
       const userData = {
         username: user.username,
         email: user.email,
         picture: user.picture,
         savedCodes: user.savedCodes,
         profileUrl: user.profileUrl,
-        isFromGithub: user.isFromGithub,      
+        isFromGithub: user.isFromGithub,
         repoName: user.repoName,
         repoOwner: user.repoOwner,
       }
