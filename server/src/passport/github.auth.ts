@@ -18,7 +18,7 @@ passport.use(
     {
       clientID: process.env.GITHUB_CLIENT_ID as string,
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
-      callbackURL: "http://localhost:8000/api/auth/github/callback",
+      callbackURL: "https://sniplet-50029808958.catalystappsail.in/api/auth/github/callback",
       scope: ['repo', 'user'] // Ask for repo access
     },
     async function (
@@ -26,7 +26,7 @@ passport.use(
       refreshToken: any,
       profile: any,
       done: any
-    ) {      
+    ) {
       // Check if user already exists
       const user = await User.findOne({ username: profile.username });
       // signup

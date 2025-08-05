@@ -26,7 +26,7 @@ passport.use(
       clientID: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_SECRET as string,
       callbackURL:
-        "http://localhost:8000/api/auth/google/callback",
+        "https://sniplet-50029808958.catalystappsail.in/api/auth/google/callback",
       passReqToCallback: true,
     },
     async function (
